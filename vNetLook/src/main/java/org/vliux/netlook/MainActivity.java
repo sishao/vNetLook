@@ -2,6 +2,7 @@ package org.vliux.netlook;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.TrafficStats;
 import android.os.Bundle;
 import android.app.Activity;
@@ -9,6 +10,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -28,18 +32,28 @@ import java.util.Map;
 
 public class MainActivity extends Activity {
     private ListView mNetUseListView;
+    private ImageButton mRefreshBtn;
+    SimpleAdapter mAdapter;
+    List<Map<String, Object>> mDataSource = new ArrayList<Map<String, Object>>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mNetUseListView = (ListView)findViewById(R.id.main_netuse_listview);
+        mRefreshBtn = (ImageButton)findViewById(R.id.main_refresh);
+        mRefreshBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new LoadNetUseAsyncTask(getPackageManager(), mHandler).execute();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        LoadNetUseAsyncTask asyncTask = new LoadNetUseAsyncTask(getPackageManager(), mHandler);
-        asyncTask.execute();
+        new LoadNetUseAsyncTask(getPackageManager(), mHandler).execute();
     }
 
     @Override
@@ -49,6 +63,23 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    private void updateDataSource(List<AppNetUse> appUses){
+        if(null == appUses){
+            return;
+        }else{
+            mDataSource.clear();
+            for(AppNetUse au : appUses){
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("name", au.getmPackageName());
+                map.put("use", String.format(Locale.US, "RX:%d, TX:%d", au.getmRxBytes(), au.getmTxBytes()));
+
+                map.put("icon", au.getmIcon());
+                mDataSource.add(map);
+                mAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -56,34 +87,32 @@ public class MainActivity extends Activity {
             switch(msg.what){
                 case LoadNetUseAsyncTask.MSG_COMPLETED:
                     TotalNetUse totalUse = (TotalNetUse)msg.obj;
-                    SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
-                            getData(totalUse.getmAppNetUses()),
+                    mAdapter = new SimpleAdapter(MainActivity.this,
+                            mDataSource,
                             R.layout.item_netuse,
                             new String[]{"icon", "name", "use"},
                             new int[]{R.id.item_netuse_icon, R.id.item_netuse_name, R.id.item_netuse_use}
                     );
-                    mNetUseListView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
+                    mAdapter.setViewBinder(new SimpleAdapter.ViewBinder() {
+                        @Override
+                        public boolean setViewValue(View view, Object o, String s) {
+                            if(view instanceof ImageView && o instanceof Drawable){
+                                ImageView iv = (ImageView)view;
+                                Drawable icon = (Drawable)o;
+                                iv.setImageDrawable(icon);
+                                return true;
+                            }else{
+                                return false;
+                            }
+                        }
+                    });
+                    mNetUseListView.setAdapter(mAdapter);
+                    updateDataSource(totalUse.getmAppNetUses());
                     break;
             }
         }
 
-        private List<Map<String, Object>> getData(List<AppNetUse> appUses){
-            List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
-            if(null == appUses){
-                return data;
-            }
 
-            for(AppNetUse au : appUses){
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("name", au.getmPackageName());
-                map.put("use", String.format(Locale.US, "RX:%d, TX:%d", au.getmRxBytes(), au.getmTxBytes()));
-
-                map.put("icon", au.getmIcon());
-                data.add(map);
-            }
-            return data;
-        }
     };
     
 }
