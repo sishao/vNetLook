@@ -10,6 +10,8 @@ import android.os.Message;
 import org.vliux.netlook.model.AppNetUse;
 import org.vliux.netlook.model.TotalNetUse;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
@@ -51,6 +53,9 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
             totalUse.setmRxBytes(totalUse.getmRxBytes() + rxBytes);
             totalUse.setmTxBytes(totalUse.getmTxBytes() + txBytes);
         }
+        // ordering the collections according to network usage
+        Collections.sort(totalUse.getmAppNetUses());
+        Collections.reverse(totalUse.getmAppNetUses());
         return totalUse;
     }
 

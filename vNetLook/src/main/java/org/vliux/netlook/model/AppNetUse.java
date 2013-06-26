@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable;
 
 import java.util.Date;
 
-public class AppNetUse {
+public class AppNetUse implements Comparable{
     public String getmAppName() {
         return mAppName;
     }
@@ -53,6 +53,10 @@ public class AppNetUse {
         this.mStartTime = mStartTime;
     }
 
+    public long getTotalBytes(){
+        return mRxBytes + mTxBytes;
+    }
+
     private String mAppName;
     private String mPackageName;
     private Drawable mIcon;
@@ -60,4 +64,21 @@ public class AppNetUse {
     private long mTxBytes;
     private Date mStartTime;
 
+    @Override
+    public int compareTo(Object o) {
+        if(o instanceof AppNetUse){
+            AppNetUse other = (AppNetUse)o;
+            long total = getTotalBytes();
+            long otherTotal = other.getTotalBytes();
+            if(total > otherTotal){
+                return 1;
+            }else if (total < otherTotal){
+                return -1;
+            }else{
+                return 0;
+            }
+        }else{
+            throw new ClassCastException();
+        }
+    }
 }
