@@ -71,7 +71,10 @@ public class MainActivity extends Activity {
             for(AppNetUse au : appUses){
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("name", au.getmPackageName());
-                map.put("use", String.format(Locale.US, "RX:%d, TX:%d", au.getmRxBytes(), au.getmTxBytes()));
+                long rx = au.getmRxBytes();
+                long tx = au.getmTxBytes();
+                long total = au.getTotalBytes();
+                map.put("use", String.format(Locale.US, "%.2fk", (double)total/1024));
 
                 map.put("icon", au.getmIcon());
                 mDataSource.add(map);
