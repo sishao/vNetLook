@@ -1,14 +1,15 @@
 package org.vliux.netlook.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by vliux on 6/26/13.
  */
 public class TotalNetUse {
-    private Long mRxBytes;
-    private Long mTxBytes;
-    private List<AppNetUse> mAppNetUses;
+    private Long mRxBytes = new Long(0L);
+    private Long mTxBytes = new Long(0L);
+    private List<AppNetUse> mAppNetUses = new ArrayList<AppNetUse>();
 
     public Long getmRxBytes() {
         return mRxBytes;

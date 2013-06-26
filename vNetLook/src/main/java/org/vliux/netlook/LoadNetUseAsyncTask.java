@@ -16,10 +16,11 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
     public static final int MSG_COMPLETED = 1;
 
     private PackageManager mPackageManager;
-    private Handler mHander;
+    private Handler mHandler;
 
     public LoadNetUseAsyncTask(PackageManager pkgManager, Handler handler){
         mPackageManager = pkgManager;
+        mHandler = handler;
     }
 
     @Override
@@ -56,10 +57,10 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
     @Override
     protected void onPostExecute(TotalNetUse totalNetUse) {
         super.onPostExecute(totalNetUse);
-        if(null != mHander){
-            Message msg = mHander.obtainMessage(MSG_COMPLETED);
+        if(null != mHandler){
+            Message msg = mHandler.obtainMessage(MSG_COMPLETED);
             msg.obj = totalNetUse;
-            mHander.sendMessage(msg);
+            mHandler.sendMessage(msg);
         }
     }
 }
