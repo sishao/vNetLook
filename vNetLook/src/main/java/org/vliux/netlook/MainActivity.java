@@ -33,6 +33,8 @@ import java.util.Map;
 public class MainActivity extends Activity {
     private ListView mNetUseListView;
     private ImageButton mRefreshBtn;
+    private TextView mSummaryTextView;
+
     SimpleAdapter mAdapter;
     List<Map<String, Object>> mDataSource = new ArrayList<Map<String, Object>>();
 
@@ -48,6 +50,7 @@ public class MainActivity extends Activity {
                 new LoadNetUseAsyncTask(getPackageManager(), mHandler).execute();
             }
         });
+        mSummaryTextView = (TextView)findViewById(R.id.main_summary);
     }
 
     @Override
@@ -111,6 +114,10 @@ public class MainActivity extends Activity {
                     });
                     mNetUseListView.setAdapter(mAdapter);
                     updateDataSource(totalUse.getmAppNetUses());
+                    mSummaryTextView.setText(String.format(Locale.US,
+                            "Total %.2fk\nMobile %.2fk",
+                            (double)(totalUse.getmRxBytes() + totalUse.getmTxBytes())/1024,
+                            (double)totalUse.getMobileBytes()/1024));
                     break;
             }
         }

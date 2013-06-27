@@ -77,9 +77,11 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
             appUse.setmRxBytes(rxBytes);
             appUse.setmTxBytes(txBytes);
             totalUse.getmAppNetUses().add(appUse);
-            totalUse.setmRxBytes(totalUse.getmRxBytes() + rxBytes);
-            totalUse.setmTxBytes(totalUse.getmTxBytes() + txBytes);
         }
+        totalUse.setmTxBytes(TrafficStats.getTotalTxBytes());
+        totalUse.setmRxBytes(TrafficStats.getTotalRxBytes());
+        totalUse.setmMobileTxBytes(TrafficStats.getMobileTxBytes());
+        totalUse.setmMobileRxBytes(TrafficStats.getMobileRxBytes());
         // ordering the collections according to network usage
         Collections.sort(totalUse.getmAppNetUses());
         Collections.reverse(totalUse.getmAppNetUses());
