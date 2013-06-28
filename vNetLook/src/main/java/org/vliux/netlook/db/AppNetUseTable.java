@@ -16,8 +16,8 @@ public class AppNetUseTable extends DbTable {
     public static final String DB_COL_TX_INTEGER_1 = "txBytes";
     public static final String DB_COL_LAST_TIME_TEXT_1 = "lastSampleTime";
 
-    public AppNetUseTable(Context context){
-        super(context);
+    public AppNetUseTable(DbHelper helper){
+        super(helper);
     }
 
     public boolean add(AppNetUse anu){

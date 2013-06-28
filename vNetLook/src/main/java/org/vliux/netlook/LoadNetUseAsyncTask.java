@@ -1,5 +1,6 @@
 package org.vliux.netlook;
 
+import android.content.ContentValues;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.TrafficStats;
@@ -8,11 +9,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.vliux.netlook.db.AppNetUseTable;
+import org.vliux.netlook.db.DbManager;
+import org.vliux.netlook.db.DbUtil;
 import org.vliux.netlook.model.AppNetUse;
 import org.vliux.netlook.model.TotalNetUse;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -61,13 +66,11 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
 
             long rxBytes = TrafficStats.getUidRxBytes(pkg.applicationInfo.uid);
             long txBytes = TrafficStats.getUidTxBytes(pkg.applicationInfo.uid);
-            //if(rxBytes + txBytes <= 0L){
-            //    Log.w(TAG, String.format(Locale.US, "Package %s ", pkg.packageName));
-            //    continue;
-            //}
 
             AppNetUse appUse = new AppNetUse();
             appUse.setmPackageName(pkg.packageName);
+            appUse.setLabel(mPackageManager.getApplicationLabel(pkg.applicationInfo).toString());
+            appUse.setmStartTime(new Date());
             try {
                 appUse.setmIcon(mPackageManager.getApplicationIcon(pkg.packageName));
             } catch (PackageManager.NameNotFoundException e) {
@@ -77,6 +80,18 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
             appUse.setmRxBytes(rxBytes);
             appUse.setmTxBytes(txBytes);
             totalUse.getmAppNetUses().add(appUse);
+            // save to db
+            AppNetUseTable appNetUseAdapter = DbManager.getInstance().getAppNetUseAdapter();
+            if(null == appNetUseAdapter.get(appUse.getmPackageName())){
+                appNetUseAdapter.add(appUse);
+            }else{
+                ContentValues cv = new ContentValues();
+                cv.put(AppNetUseTable.DB_COL_LABEL_TEXT_1, appUse.getLabel());
+                cv.put(AppNetUseTable.DB_COL_RX_INTEGER_1, appUse.getmRxBytes());
+                cv.put(AppNetUseTable.DB_COL_TX_INTEGER_1, appUse.getmTxBytes());
+                cv.put(AppNetUseTable.DB_COL_LAST_TIME_TEXT_1, DbUtil.dateToString(appUse.getmStartTime()));
+                appNetUseAdapter.update(appUse.getmPackageName(), cv);
+            }
         }
         totalUse.setmTxBytes(TrafficStats.getTotalTxBytes());
         totalUse.setmRxBytes(TrafficStats.getTotalRxBytes());

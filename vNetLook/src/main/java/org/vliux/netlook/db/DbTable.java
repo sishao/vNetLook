@@ -14,18 +14,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Created by vliux on 6/28/13.
- */
 public abstract class DbTable {
     protected final String DB_COLUMN_PREFIX = "DB_COL_";
     protected final int DB_COLUMN_SECTIONS = 4;
     protected HashMap<String, DbColumnDef> mColumnDefinitions = new HashMap<String, DbColumnDef>();
     protected DbHelper mDbHelper;
 
-    protected DbTable(Context context){
-        mDbHelper = new DbHelper(context);
+    protected DbTable(DbHelper helper){
+        mDbHelper = helper;
         initColumns();
+        helper.registerDbTable(this);
     }
 
     protected void initColumns(){
@@ -65,7 +63,7 @@ public abstract class DbTable {
 
     public String getCreateSql(){
         StringBuilder sb = new StringBuilder("CREATE TABLE " + getTableName() +
-                " _id INTEGER DEFAULT '0' NOT NULL PRIMARY KEY AUTOINCREMENT");
+                " (_id INTEGER DEFAULT '0' NOT NULL PRIMARY KEY AUTOINCREMENT");
         for(String colName : mColumnDefinitions.keySet()){
             DbColumnDef colDef = mColumnDefinitions.get(colName);
             sb.append(String.format(Locale.US,
@@ -80,7 +78,7 @@ public abstract class DbTable {
         return null;
     }
 
-    public boolean insert(ContentValues cv){
+    protected boolean insert(ContentValues cv){
         SQLiteDatabase sqliteDb = null;
         try {
             sqliteDb = mDbHelper.getWritableDatabase();
@@ -100,7 +98,7 @@ public abstract class DbTable {
         }
     }
 
-    public boolean update(ContentValues cv, String whereClause, String[] whereArgs){
+    protected boolean update(ContentValues cv, String whereClause, String[] whereArgs){
         SQLiteDatabase sqliteDb = null;
         try {
             sqliteDb = mDbHelper.getWritableDatabase();
@@ -120,7 +118,7 @@ public abstract class DbTable {
         }
     }
 
-    public boolean delete(String whereClause, String[] whereArgs ){
+    protected boolean delete(String whereClause, String[] whereArgs ){
         SQLiteDatabase sqliteDb = null;
         try {
             sqliteDb = mDbHelper.getWritableDatabase();
@@ -197,6 +195,9 @@ public abstract class DbTable {
         }finally{
             // no need to close SQLiteDatabase as it is cached by Helper
             // if close it here, later use of the SQLiteDatabase obj will throw NullPointerException
+            //if(null != db){
+            //    db.close();
+            //}
         }
     }
 
