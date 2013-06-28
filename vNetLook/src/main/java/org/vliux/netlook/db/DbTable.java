@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -139,7 +140,7 @@ public abstract class DbTable {
         }
     }
 
-    protected Cursor __select(String[] columns, ContentValues cv, int[] limits, String indexColumn) throws IllegalArgumentException {
+    protected Cursor __select(String[] columns, ContentValues cv, int[] limits) throws IllegalArgumentException {
         // generate SQL WHERE clause and selectArgs
         String whereClause = "";
         ArrayList<String> selectArgs = new ArrayList<String>();
@@ -188,7 +189,7 @@ public abstract class DbTable {
                     (null != whereClause? selectArgs.toArray(new String[selectArgs.size()]):null),
                     null,
                     null,
-                    indexColumn + " DESC",
+                    null,
                     limitClause);
         }catch(SQLiteException exp){
             Log.e(getTableName(), exp.toString());

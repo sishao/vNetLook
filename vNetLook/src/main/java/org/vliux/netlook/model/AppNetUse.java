@@ -5,12 +5,12 @@ import android.graphics.drawable.Drawable;
 import java.util.Date;
 
 public class AppNetUse implements Comparable{
-    public String getmAppName() {
-        return mAppName;
+    public String getLabel() {
+        return mLabel;
     }
 
-    public void setmAppName(String mAppName) {
-        this.mAppName = mAppName;
+    public void setLabel(String mAppName) {
+        this.mLabel = mAppName;
     }
 
     public String getmPackageName() {
@@ -57,7 +57,7 @@ public class AppNetUse implements Comparable{
         return mRxBytes + mTxBytes;
     }
 
-    private String mAppName;
+    private String mLabel;
     private String mPackageName;
     private Drawable mIcon;
     private long mRxBytes;
