@@ -4,30 +4,63 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
 import org.vliux.netlook.util.NetUtil;
 
-/**
- * Created by vliux on 6/27/13.
- */
 public class NetStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if(action.equals(ConnectivityManager.CONNECTIVITY_ACTION) ||
-            action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
-            int network = NetUtil.getConnectivityStatus(context);
+        if(action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
+            int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
             String msg = null;
-            if(network == NetUtil.TYPE_MOBILE){
-                msg = "[v] Using mobile 2G/3G network";
-            }else if(network == NetUtil.TYPE_WIFI){
-                msg = "[v] Using WIFI network";
-            }else{
-                msg = "[v] No connectivity";
+            switch(state){
+                case WifiManager.WIFI_STATE_DISABLED:
+                    msg = "WIFI is disabled";
+                    break;
+                case WifiManager.WIFI_STATE_DISABLING:
+                    msg = "WIFI is disabling ...";
+                    break;
+                case WifiManager.WIFI_STATE_ENABLED:
+                    msg = "WIFI is enabled";
+                    break;
+                case WifiManager.WIFI_STATE_ENABLING:
+                    msg = "WIFI is enabling ...";
+                    break;
+                case WifiManager.WIFI_STATE_UNKNOWN:
+                    msg = "[ERROR] WIFI state is unknown";
+                    break;
             }
-            Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+            if(null != msg){
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+            }
+        }else if(action.equals(ConnectivityManager.CONNECTIVITY_ACTION)){
+            NetworkInfo networkInfo = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+            if(null != networkInfo &&
+                    networkInfo.getType() == ConnectivityManager.TYPE_MOBILE){
+                String msg = null;
+                switch(networkInfo.getState()){
+                    case DISCONNECTED:
+                        msg = "Mobile 2G/3G is disabled";
+                        break;
+                    case DISCONNECTING:
+                        msg = "Mobile 2G/3G disabling ...";
+                        break;
+                    case CONNECTED:
+                        msg = "Mobile 2G/3G is enabled";
+                        break;
+                    case CONNECTING:
+                        msg = "Mobile 2G/3G is enabling ...";
+                        break;
+                }
+                if(null != msg){
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
         }
     }
 }
