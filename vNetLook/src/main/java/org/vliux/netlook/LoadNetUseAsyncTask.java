@@ -1,6 +1,7 @@
 package org.vliux.netlook;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.TrafficStats;
@@ -28,10 +29,12 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
         "android.permission.INTERNET"
     };
 
+    private DbManager mDbManager;
     private PackageManager mPackageManager;
     private Handler mHandler;
 
-    public LoadNetUseAsyncTask(PackageManager pkgManager, Handler handler){
+    public LoadNetUseAsyncTask(DbManager dbManager, PackageManager pkgManager, Handler handler){
+        mDbManager = dbManager;
         mPackageManager = pkgManager;
         mHandler = handler;
     }
@@ -81,10 +84,10 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
             appUse.setmTxBytes(txBytes);
             totalUse.getmAppNetUses().add(appUse);
             // save to db
-            AppNetUseTable appNetUseAdapter = DbManager.getInstance().getAppNetUseAdapter();
-            if(null == appNetUseAdapter.get(appUse.getmPackageName())){
+            AppNetUseTable appNetUseAdapter = mDbManager.getAppNetUseAdapter();
+            if (null == appNetUseAdapter.get(appUse.getmPackageName())) {
                 appNetUseAdapter.add(appUse);
-            }else{
+            } else {
                 ContentValues cv = new ContentValues();
                 cv.put(AppNetUseTable.DB_COL_LABEL_TEXT_1, appUse.getLabel());
                 cv.put(AppNetUseTable.DB_COL_RX_INTEGER_1, appUse.getmRxBytes());
@@ -100,6 +103,7 @@ public class LoadNetUseAsyncTask extends AsyncTask<Void, Integer, TotalNetUse> {
         // ordering the collections according to network usage
         Collections.sort(totalUse.getmAppNetUses());
         Collections.reverse(totalUse.getmAppNetUses());
+        mDbManager.close();
         return totalUse;
     }
 

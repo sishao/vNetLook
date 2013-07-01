@@ -8,7 +8,5 @@ public class NetLookApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DbManager.setContext(getApplicationContext());
-        DbManager.getInstance();
     }
 }

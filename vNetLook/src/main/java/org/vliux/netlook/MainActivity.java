@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import org.vliux.netlook.db.DbManager;
 import org.vliux.netlook.model.AppNetUse;
 import org.vliux.netlook.model.TotalNetUse;
 
@@ -47,7 +48,7 @@ public class MainActivity extends Activity {
         mRefreshBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new LoadNetUseAsyncTask(getPackageManager(), mHandler).execute();
+                new LoadNetUseAsyncTask(new DbManager(MainActivity.this), getPackageManager(), mHandler).execute();
             }
         });
         mSummaryTextView = (TextView)findViewById(R.id.main_summary);
@@ -56,7 +57,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        new LoadNetUseAsyncTask(getPackageManager(), mHandler).execute();
+        new LoadNetUseAsyncTask(new DbManager(this), getPackageManager(), mHandler).execute();
     }
 
     @Override
