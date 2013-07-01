@@ -10,6 +10,7 @@ import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
 import org.vliux.netlook.R;
+import org.vliux.netlook.biz.UserMobileDataAction;
 import org.vliux.netlook.util.NetUtil;
 import org.vliux.netlook.util.NotifyUtil;
 
@@ -54,13 +55,17 @@ public class NetStateReceiver extends BroadcastReceiver {
                         break;
                     case CONNECTED:
                         msg = "Mobile 2G/3G is enabled";
-                        NotifyUtil.sendNotification(context, "Mobile 2G/3G is enabled", "Now you are using mobile 2G/3G network",
-                                -1, BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+                        UserMobileDataAction umda = new UserMobileDataAction(context);
+                        if(umda.getMonitoring()){
+                            NotifyUtil.sendNotification(context, "Mobile 2G/3G is enabled", "Now you are using mobile 2G/3G network",
+                                    -1, BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+                        }
+                        umda.close();
                         break;
                     case CONNECTING:
                         msg = "Mobile 2G/3G is enabling ...";
-                        NotifyUtil.sendNotification(context, "Mobile 2G/3G is enabling ...", "Now you will use mobile 2G/3G network",
-                                -1, BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+                        //NotifyUtil.sendNotification(context, "Mobile 2G/3G is enabling ...", "Now you will use mobile 2G/3G network",
+                        //        -1, BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
                         break;
                 }
                 if(null != msg){
