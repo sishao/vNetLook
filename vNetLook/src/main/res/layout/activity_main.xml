@@ -32,17 +32,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:textOn="监控移动数据"
-            android:textOff="未监控移动数据"
+            android:textOn="正在监控2G/3G"
+            android:textOff="未监控2G/3G"
             android:textColor="#FFFFFF"
             android:switchPadding="0sp"
-            android:gravity="fill"
+            android:gravity="center"
             android:singleLine="false"
+            android:layout_weight="1"
                 />
         <ImageButton
                 android:id="@+id/main_refresh"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:text="Refresh"
                 android:src="@drawable/refresh"
                 android:layout_weight="2"/>

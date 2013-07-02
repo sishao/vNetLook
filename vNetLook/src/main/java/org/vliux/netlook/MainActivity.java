@@ -83,9 +83,9 @@ public class MainActivity extends Activity {
                 }
 
                 if(isClicked){
-                    Toast.makeText(MainActivity.this, "开始移动数据监控", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.start_monitor_3g), Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(MainActivity.this, "关闭移动数据监控", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.stop_monitor_3g), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -152,10 +152,10 @@ public class MainActivity extends Activity {
                     });
                     mNetUseListView.setAdapter(mAdapter);
                     updateDataSource(totalUse.getmAppNetUses());
-                    mSummaryTextView.setText(String.format(Locale.US,
-                            "全部流量 %.2fk\n移动流量 %.2fk",
-                            (double)(totalUse.getmRxBytes() + totalUse.getmTxBytes())/1024,
-                            (double)totalUse.getMobileBytes()/1024));
+                    String totalMsg = String.format(getString(R.string.netuse_summary_total), ((double)totalUse.getBytes()/1024));
+                    String mobileMsg = String.format(getString(R.string.netuse_summary_mobile), ((double)totalUse.getMobileBytes())/1024);
+
+                    mSummaryTextView.setText(totalMsg + "\n" + mobileMsg);
                     break;
             }
         }

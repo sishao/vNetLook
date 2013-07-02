@@ -29,6 +29,10 @@ public class TotalNetUse {
         this.mTxBytes = mTxBytes;
     }
 
+    public long getBytes(){
+        return this.mRxBytes + this.mTxBytes;
+    }
+
     public List<AppNetUse> getmAppNetUses() {
         return mAppNetUses;
     }

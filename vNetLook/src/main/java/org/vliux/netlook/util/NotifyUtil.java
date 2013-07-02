@@ -24,7 +24,7 @@ public class NotifyUtil {
             builder.setLargeIcon(largeIcon);
         }
 
-        Uri ringtoneUrl = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        Uri ringtoneUrl = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         builder.setSound(ringtoneUrl);
 
         Notification noti = builder.getNotification();
